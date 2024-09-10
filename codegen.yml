@@ -1,0 +1,18 @@
+overwrite: true
+schema: https://carltontownfc.co.uk/graphql
+documents: src/**/queries.gql
+generates:
+  src/lib/gql/gen/codegen.ts:
+    config:
+      maybeValue: T | null | undefined
+      clientPath: ../apolloClient
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "graphql-codegen-svelte-apollo"
+  src/lib/gql/gen/schema.json:
+    plugins:
+      - "introspection"
+hooks:
+  afterAllFileWrite:
+    - prettier --write

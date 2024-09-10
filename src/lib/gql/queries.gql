@@ -1,0 +1,128 @@
+fragment PostFragment on Post {
+  title
+  date
+  slug
+  excerpt
+  featuredImage {
+    node {
+      altText
+      sourceUrl
+    }
+  }
+  categories {
+    edges {
+      node {
+        slug
+      }
+    }
+  }
+  seo {
+    canonical
+    metaDesc
+    title
+  }
+}
+
+fragment PageInfoFragment on PageInfo {
+  hasNextPage
+  hasPreviousPage
+  endCursor
+}
+
+fragment MenuItemFragment on MenuItem {
+  label
+  uri
+}
+
+fragment SeoFragment on PostTypeSEO {
+  canonical
+  metaDesc
+  title
+}
+
+query getMenu($slug: ID!) {
+  menu(id: $slug, idType: SLUG) {
+    menuItems(first: 100) {
+      edges {
+        node {
+          ...MenuItemFragment
+          childItems(first: 100) {
+            edges {
+              node {
+                ...MenuItemFragment
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query getPosts($first: Int, $after: String, $categorySlug: String) {
+  posts(first: $first, after: $after, where: { categoryName: $categorySlug }) {
+    edges {
+      node {
+        ...PostFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+}
+
+query getPost($id: ID!) {
+  post(id: $id, idType: SLUG) {
+    ...PostFragment
+  }
+}
+
+query getStandardPage($uri: ID!) {
+  page(id: $uri, idType: URI) {
+    title
+    content
+    seo {
+      ...SeoFragment
+    }
+  }
+}
+
+query getHome($first: Int, $after: String, $categorySlug: String) {
+  posts(first: $first, after: $after, where: { categoryName: $categorySlug }) {
+    edges {
+      node {
+        ...PostFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+  carltonTownOptions {
+    carltonOptions {
+      homeTeam
+      awayTeam
+      competition
+      date
+      time
+      venue
+    }
+  }
+}
+
+query getSponsors {
+  carltonTownOptions {
+    carltonOptions {
+      sponsor {
+        sponsorLink
+        sponsorName
+        sponsorLogo {
+          node {
+            sourceUrl(size: MEDIUM)
+          }
+        }
+      }
+    }
+  }
+}
